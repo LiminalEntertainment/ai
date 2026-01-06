@@ -27,12 +27,11 @@ def load_model():
 
     model = MLPClassifier(
         hidden_layer_sizes=(100,),
-        max_iter=1,          # single-step updates
-        warm_start=True,     # keep weights
+        max_iter=1,
         random_state=42
     )
 
-    # Initial training (define all classes)
+    # Initial training with all classes
     model.partial_fit(X, y, classes=np.arange(10))
     return model
 
@@ -80,7 +79,7 @@ if uploaded_file is not None:
             st.write(f"Digit {i}: {p:.2%}")
 
         # ===============================
-        # Feedback / Reward system
+        # Feedback / Learning
         # ===============================
         st.divider()
         st.subheader("Teach the AI")
@@ -93,8 +92,12 @@ if uploaded_file is not None:
         )
 
         if st.button("Reward / Update Model"):
-            model.partial_fit(img_flat, [correct_label])
-            st.success("✅ AI updated! It learned from your correction.")
+            model.partial_fit(
+                img_flat,
+                [correct_label],
+                classes=np.arange(10)   # 🔑 REQUIRED FIX
+            )
+            st.success("✅ AI learned from this example.")
 
     except Exception as e:
         st.error(f"Error processing image: {e}")
@@ -104,14 +107,13 @@ if uploaded_file is not None:
 # ===============================
 st.sidebar.header("Instructions")
 st.sidebar.write("""
-1. Upload a handwritten digit image (0–9)
-2. The image is converted to 8×8 pixels
-3. The AI predicts the digit
-4. If wrong, enter the correct digit
-5. Click **Reward / Update Model**
-6. Over time, the AI adapts to your handwriting
+1. Upload a handwritten digit (0–9)
+2. AI predicts the digit
+3. If wrong, enter the correct one
+4. Click **Reward / Update Model**
+5. The AI improves over time
 
-**Best results:**
+**Tips:**
 - White background
 - Black digit
 - Centered
