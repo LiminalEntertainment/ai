@@ -1,0 +1,9 @@
+python
+
+from PIL import Image
+
+image = Image.open(uploaded_file)
+
+img_gray = image.convert('L')
+
+img_resized = img_gray.resize((8, 8))
